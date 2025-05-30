@@ -34,16 +34,19 @@ app.post('/users', async (req, res) => {
     }
 });
 
-// Read user by ID
-app.get('/users/:id', async (req, res) => {
+// Find by email
+app.get('/users/email/:email', async (req, res) => {
     try {
         const { rows } = await db.query(
-            'SELECT id, username, email FROM users WHERE id = $1',
-            [req.params.id]
+            'SELECT id, username, email FROM users WHERE email = $1',
+            [req.params.email]
         );
-        if (!rows.length) return res.status(404).json({ error: 'Not found' });
+        if (rows.length === 0) {
+            return res.status(404).json({ error: 'Not found' });
+        }
         res.json(rows[0]);
     } catch (err) {
+        console.error(err);
         res.status(500).json({ error: err.message });
     }
 });
